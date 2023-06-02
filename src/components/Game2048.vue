@@ -1,9 +1,11 @@
 <template>
-    <div class="game2048">
-      <h1>Jeu 2048</h1>
+  <div class="game2048">
+    <h1>Jeu 2048</h1>
+    <div class="score-board">Score: {{ score }}</div>
+    <div class="game-container">
       <div class="game-board">
         <div class="grid-row" v-for="(row, rowIndex) in grid" :key="rowIndex">
-          <div class="grid-cell" v-for="(cell, cellIndex) in row" :key="cellIndex" :data-value="cell">
+          <div class="grid-cell" v-for="(cell, cellIndex) in row" :key="`${rowIndex}-${cellIndex}-${cell}`" :data-value="cell">
             {{ cell !== 0 ? cell : '' }}
           </div>
         </div>
@@ -19,6 +21,7 @@
         <button class="control-button" @click="restartGame">Rejouer</button>
       </div>
     </div>
+  </div>
 </template>
 
   <script>
@@ -30,6 +33,7 @@
         size: 4,
         moves: 0,
         isGameOver: false,
+        score: 0,
       };
     },
     created() {
@@ -114,22 +118,22 @@
           this.isGameOver = true;
         }
       },
-
       collapse(row) {
         let newRow = row.filter(item => item !== 0);
         while (newRow.length < this.size) {
-          newRow.push(0);
-        }
-
-        for (let i = 0; i < newRow.length - 1; i++) {
-          if (newRow[i] === newRow[i + 1]) {
-            newRow[i] = newRow[i] * 2;
-            newRow.splice(i + 1, 1);
             newRow.push(0);
-          }
+        }
+        for (let i = 0; i < newRow.length - 1; i++) {
+            if (newRow[i] === newRow[i + 1]) {
+                newRow[i] = newRow[i] * 2;
+                newRow.splice(i + 1, 1);
+                newRow.push(0);
+                this.score += newRow[i];
+            }
         }
         return newRow;
-      },
+    },
+
       transpose(matrix) {
         const transposedMatrix = matrix[0].map((col, i) => matrix.map(row => row[i]));
         return transposedMatrix;
@@ -182,12 +186,12 @@
   }
 
   .game-board {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    height: 300px;
-    margin: 20px 0;
-  }
+  display: flex;
+  flex-direction: column;
+  width: 500x; /* modifier la largeur ici */
+  height: px; /* modifier la hauteur ici */
+  margin: 20px 0;
+}
 
   .grid-row {
     display: flex;
@@ -196,16 +200,19 @@
   }
 
   .grid-cell {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
-    background-color: #ccc0b4;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    transition: transform 0.2s ease-out;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px; /* modifier la largeur ici */
+  height: 120px; /* modifier la hauteur ici */
+  background-color: #ccc0b4;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: transform 0.2s ease-out;
+  margin: 7px;
+  animation: slideAndMerge 0.3s ease;
+}
+
 
   .grid-cell[data-value='0'] {
     background-color: #ccc0b4;
@@ -213,48 +220,63 @@
   .grid-cell[data-value='2'] {
     background-color: #eee4da;
     animation: merge 0.2s ease-out both;
+    font-size: 30px;
   }
   .grid-cell[data-value='4'] {
     background-color: #ede0c8;
     animation: merge 0.2s ease-out both;
+    font-size: 30px;
   }
   .grid-cell[data-value='8'] {
     background-color: #f2b179;
     animation: merge 0.2s ease-out both;
+    font-size: 30px;
   }
   .grid-cell[data-value='16'] {
     background-color: #f59563;
     animation: merge 0.2s ease-out both;
+    font-size: 30px;
   }
     .grid-cell[data-value='32'] {
         background-color: #f67c5f;
         animation: merge 0.2s ease-out both;
+        font-size: 30px;
     }
     .grid-cell[data-value='64'] {
         background-color: #f65e3b;
         animation: merge 0.2s ease-out both;
+        font-size: 30px;
     }
     .grid-cell[data-value='128'] {
         background-color: #edcf72;
         animation: merge 0.2s ease-out both;
+        font-size: 30px;
     }
     .grid-cell[data-value='256'] {
         background-color: #edcc61;
         animation: merge 0.2s ease-out both;
+        font-size: 30px;
     }
     .grid-cell[data-value='512'] {
         background-color: #edc850;
         animation: merge 0.2s ease-out both;
+        font-size: 30px;
     }
     .grid-cell[data-value='1024'] {
         background-color: #edc53f;
         animation: merge 0.2s ease-out both;
+        font-size: 30px;
     }
     .grid-cell[data-value='2048'] {
         background-color: #edc22e;
         animation: merge 0.2s ease-out both;
+        font-size: 30px;
     }
-
+    .grid-cell[data-value='4096'] {
+        background-color: #13669e;
+        animation: merge 0.2s ease-out both;
+        font-size: 30px;
+    }
 
 @keyframes slide {
   0% {
@@ -273,6 +295,21 @@
     transform: scale(1.1);
   }
 }
+
+@keyframes slideAndMerge {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
   .controls {
     display: flex;
     justify-content: space-between;
@@ -286,13 +323,24 @@
 
   .game-over-message {
   margin-top: 20px;
-  font-size: 1.5em;
+  font-size: 2em;
   color: red;
 }
 .control-button {
   padding: 10px;
   font-size: 1em;
   margin-top: 10px;
+}
+
+.game-container {
+  background-color: #bbada0;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.score-board {
+  margin: 20px 0;
+  font-size: 32px;
 }
 
   </style>
