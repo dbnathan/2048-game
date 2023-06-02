@@ -14,8 +14,12 @@
         <button class="control-button" @click="move('left')">Gauche</button>
         <button class="control-button" @click="move('right')">Droite</button>
       </div>
+      <div v-if="isGameOver" class="game-over-message">
+        La partie est terminée. Vous avez effectué {{ moves }} mouvements.
+        <button class="control-button" @click="restartGame">Rejouer</button>
+      </div>
     </div>
-  </template>
+</template>
 
   <script>
   export default {
@@ -30,6 +34,12 @@
     },
     created() {
       this.initGame();
+    },
+    mounted() {
+    document.addEventListener('keydown', (event) => this.handleKeydown(event));
+    },
+    beforeUnmount() {
+        document.removeEventListener('keydown', (event) => this.handleKeydown(event));
     },
     methods: {
       initGame() {
@@ -53,6 +63,12 @@
           this.grid[randomCell.row][randomCell.col] = Math.random() < 0.9 ? 2 : 4;
         }
       },
+      restartGame() {
+        this.grid = [];
+        this.moves = 0;
+        this.isGameOver = false;
+        this.initGame();
+        },
       getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
       },
@@ -98,6 +114,7 @@
           this.isGameOver = true;
         }
       },
+
       collapse(row) {
         let newRow = row.filter(item => item !== 0);
         while (newRow.length < this.size) {
@@ -134,6 +151,25 @@
         }
         return false;
       },
+        handleKeydown(event) {
+            console.log(this);
+      switch(event.key) {
+        case 'ArrowUp':
+          this.move('up');
+          break;
+        case 'ArrowDown':
+          this.move('down');
+          break;
+        case 'ArrowLeft':
+          this.move('left');
+          break;
+        case 'ArrowRight':
+          this.move('right');
+          break;
+        default:
+          break;
+      }
+    },
     },
   };
   </script>
@@ -168,6 +204,7 @@
     background-color: #ccc0b4;
     border: 1px solid #ddd;
     border-radius: 4px;
+    transition: transform 0.2s ease-out;
   }
 
   .grid-cell[data-value='0'] {
@@ -175,39 +212,67 @@
   }
   .grid-cell[data-value='2'] {
     background-color: #eee4da;
+    animation: merge 0.2s ease-out both;
   }
   .grid-cell[data-value='4'] {
     background-color: #ede0c8;
+    animation: merge 0.2s ease-out both;
   }
   .grid-cell[data-value='8'] {
     background-color: #f2b179;
+    animation: merge 0.2s ease-out both;
   }
   .grid-cell[data-value='16'] {
     background-color: #f59563;
+    animation: merge 0.2s ease-out both;
   }
     .grid-cell[data-value='32'] {
         background-color: #f67c5f;
+        animation: merge 0.2s ease-out both;
     }
     .grid-cell[data-value='64'] {
         background-color: #f65e3b;
+        animation: merge 0.2s ease-out both;
     }
     .grid-cell[data-value='128'] {
         background-color: #edcf72;
+        animation: merge 0.2s ease-out both;
     }
     .grid-cell[data-value='256'] {
         background-color: #edcc61;
+        animation: merge 0.2s ease-out both;
     }
     .grid-cell[data-value='512'] {
         background-color: #edc850;
+        animation: merge 0.2s ease-out both;
     }
     .grid-cell[data-value='1024'] {
         background-color: #edc53f;
+        animation: merge 0.2s ease-out both;
     }
     .grid-cell[data-value='2048'] {
         background-color: #edc22e;
+        animation: merge 0.2s ease-out both;
     }
 
 
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes merge {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
   .controls {
     display: flex;
     justify-content: space-between;
@@ -218,4 +283,16 @@
     padding: 10px;
     font-size: 1em;
   }
+
+  .game-over-message {
+  margin-top: 20px;
+  font-size: 1.5em;
+  color: red;
+}
+.control-button {
+  padding: 10px;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
   </style>
